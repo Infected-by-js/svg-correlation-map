@@ -1,4 +1,4 @@
-export const TICKERS: string[] = [
+export const TICKERS = [
   "AAPL",
   "ABBV",
   "ABT",

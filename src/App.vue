@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, ref } from "vue";
-import { onMounted } from "vue";
+import { computed, onBeforeUnmount, ref, onMounted } from "vue";
+import { getRandomColor } from "./helpers/utils";
 import CorrelationMap from "./components/CorrelationMap.vue";
+import DescriptionSection from "./components/DescriptionSection.vue";
 
 const sizes = [
   { condition: (w: number) => w < 375, cols: 9 },
@@ -12,12 +13,14 @@ const sizes = [
   { condition: (w: number) => w >= 1440, cols: 34 },
 ];
 
-const screenSize = ref<number>(0);
+const screenSize = ref(0);
+const tableColor = ref("#547AA5");
 const colsCount = computed(() => {
   return sizes.find((item) => item.condition(screenSize.value))?.cols || 32;
 });
 
 const setWidth = () => (screenSize.value = window.innerWidth);
+const switchColor = () => (tableColor.value = getRandomColor());
 
 setWidth();
 
@@ -26,7 +29,8 @@ onBeforeUnmount(() => window.removeEventListener("resize", setWidth));
 </script>
 
 <template>
-  <CorrelationMap :cols-count="colsCount" />
+  <DescriptionSection @switch-color="switchColor" :color="tableColor" />
+  <CorrelationMap :cols-count="colsCount" :cell-size="14" :color="tableColor" />
 </template>
 
 <style>
@@ -41,5 +45,6 @@ onBeforeUnmount(() => window.removeEventListener("resize", setWidth));
   justify-content: center;
   min-height: 100vh;
   width: 100vw;
+  flex-direction: column;
 }
 </style>

@@ -6,26 +6,22 @@ import { TICKERS } from "@/helpers/tickers";
 import AxisX from "./CorrelationMapAxisX.vue";
 import AxisY from "./CorrelationMapAxisY.vue";
 
-const MARGIN = 60;
-
 const props = defineProps({
   colsCount: { type: Number, default: 36 },
   padding: { type: Number, default: 0 },
   color: { type: String, default: "#547AA5" },
+  cellSize: { type: Number, default: 13 },
 });
+const { colsCount, padding, color, cellSize } = toRefs(props);
 
-const { colsCount, padding, color } = toRefs(props);
-const cell = reactive({
-  size: 15,
-  offset: 1.5,
-});
-
+const cell = reactive({ size: cellSize.value, offset: 1.5 });
 const interval = ref<Interval | null>(null);
 const corrMap = ref<MapCell[]>([]);
 
+const margin = computed(() => cell.size * 4 + cell.offset * 4);
 const tickersToDraw = computed(() => TICKERS.slice(0, colsCount.value));
 const boardSize = computed(() => {
-  return colsCount.value * cell.size * cell.offset + MARGIN * 2;
+  return colsCount.value * cell.size * cell.offset + margin.value * 2;
 });
 
 const updateCorr = () => {
@@ -49,7 +45,7 @@ onBeforeUnmount(() => clearInterval(interval.value as Interval));
 
 <template>
   <svg :width="boardSize" :height="boardSize">
-    <g :transform="`translate(${MARGIN}, ${MARGIN})`">
+    <g :transform="`translate(${margin}, ${margin})`">
       <g :transform="`translate(${padding}, ${padding})`">
         <AxisX :items="tickersToDraw" :cell-size="cell.size" />
         <AxisX :items="tickersToDraw" :cell-size="cell.size" alt />
@@ -60,8 +56,8 @@ onBeforeUnmount(() => clearInterval(interval.value as Interval));
         <rect
           v-for="{ col, row, correlation, id } in corrMap"
           :key="id"
-          :x="(col - 1) * cell.size * 1.5"
-          :y="(row - 1) * cell.size * 1.5"
+          :x="(col - 1) * cell.size * cell.offset"
+          :y="(row - 1) * cell.size * cell.offset"
           :width="cell.size"
           :height="cell.size"
           :fill="color"

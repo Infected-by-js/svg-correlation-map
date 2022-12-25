@@ -9,9 +9,3 @@ export interface MapCell {
   row: number;
   col: number;
 }
-
-export interface UseCorrelationMap {
-  corrMap: MapCell[];
-  createMap: (names: string[], colsCount: number) => void;
-  updateMapValue: (colsCount: number) => void;
-}
